@@ -117,3 +117,5 @@ dist
 
 # vercel
 .vercel/
+# clerk configuration (can include secrets)
+/.clerk/

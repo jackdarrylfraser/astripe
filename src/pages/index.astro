@@ -1,3 +1,7 @@
+---
+import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/astro/components";
+---
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -9,6 +13,13 @@
     <main>
       <h1>Astripe</h1>
       <p>A basic Astro starter built with Bun.</p>
+      <Show when="signed-out">
+        <SignInButton />
+        <SignUpButton />
+      </Show>
+      <Show when="signed-in">
+        <UserButton />
+      </Show>
     </main>
   </body>
 </html>
