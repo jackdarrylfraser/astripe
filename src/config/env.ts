@@ -8,6 +8,8 @@ export const env = createEnv({
     UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
     // Vercel Blob
     BLOB_READ_WRITE_TOKEN: z.string().optional(),
+    // Resend Email
+    RESEND_API_KEY: z.string().optional(),
   },
   client: {
     // Add your client-side environment variables here

@@ -6,4 +6,14 @@ export default defineConfig({
   output: "server",
   adapter: vercel(),
   integrations: [mdx()],
+  vite: {
+    ssr: {
+      external: ["resend"],
+    },
+    resolve: {
+      alias: {
+        "@": "/src",
+      },
+    },
+  },
 });
