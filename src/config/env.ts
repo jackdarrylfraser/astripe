@@ -3,8 +3,9 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
-    // Add your server-side environment variables here
-    // Example: DATABASE_URL: z.string().url(),
+    // Upstash Redis
+    UPSTASH_REDIS_REST_URL: z.string().url().optional(),
+    UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
   },
   client: {
     // Add your client-side environment variables here
