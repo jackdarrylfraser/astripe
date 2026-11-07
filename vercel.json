@@ -1,0 +1,8 @@
+{
+  "buildCommand": "bun run build",
+  "installCommand": "bun install",
+  "devCommand": "bun run dev",
+  "framework": "astro",
+  "nodeVersion": "20.x",
+  "crons": []
+}
