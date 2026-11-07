@@ -20,3 +20,9 @@ bun run check    # Check Astro and TypeScript files
 bun run build    # Build the static site into dist/
 bun run preview  # Preview the production build locally
 ```
+
+## MDX
+
+MDX is enabled through Astro's MDX integration. Add `.mdx` files to `src/pages/`
+to create pages. See `src/pages/example.mdx` for a basic example using
+`src/layouts/BaseLayout.astro`, available at `/example/`.
