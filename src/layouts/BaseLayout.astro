@@ -1,11 +1,11 @@
 ---
+import "../styles/site.css";
+
 interface Props {
-  frontmatter: {
-    title: string;
-  };
+  title: string;
 }
 
-const { frontmatter } = Astro.props;
+const { title } = Astro.props;
 ---
 
 <!doctype html>
@@ -13,11 +13,17 @@ const { frontmatter } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{frontmatter.title}</title>
+    <title>{title}</title>
+    <slot name="head" />
   </head>
   <body>
-    <main>
-      <slot />
+    <main class="site-shell">
+      <nav class="site-nav" aria-label="Main navigation">
+        <slot name="nav" />
+      </nav>
+      <section class="site-card">
+        <slot name="body" />
+      </section>
     </main>
   </body>
 </html>

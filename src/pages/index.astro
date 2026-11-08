@@ -1,25 +1,26 @@
 ---
 import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/astro/components";
+import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Astripe</title>
-  </head>
-  <body>
-    <main>
-      <h1>Astripe</h1>
-      <p>A basic Astro starter built with Bun.</p>
+<BaseLayout title="Astripe">
+  <a slot="nav" class="nav-link" href="/pricing">Pricing</a>
+  <a slot="nav" class="nav-link" href="/members">Members area</a>
+  <Fragment slot="body">
+    <h1 class="page-title page-title--home">Astripe</h1>
+    <p class="page-intro">A basic Astro starter built with Bun.</p>
+    <div class="action-row">
       <Show when="signed-out">
-        <SignInButton />
-        <SignUpButton />
+        <SignInButton asChild>
+          <button class="clerk-button clerk-button--secondary" type="button">Sign in</button>
+        </SignInButton>
+        <SignUpButton asChild>
+          <button class="clerk-button clerk-button--primary" type="button">Create account</button>
+        </SignUpButton>
       </Show>
       <Show when="signed-in">
         <UserButton />
       </Show>
-    </main>
-  </body>
-</html>
+    </div>
+  </Fragment>
+</BaseLayout>
