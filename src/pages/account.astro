@@ -24,7 +24,15 @@ Astro.response.headers.set("Cache-Control", "private, no-store");
       </SignOutButton>
     </div>
     <div class="account-profile">
-      <UserProfile routing="hash" />
+      <UserProfile
+        routing="hash"
+        appearance={{
+          elements: {
+            rootBox: { width: "100%", maxWidth: "100%", minWidth: 0 },
+            cardBox: { width: "100%", maxWidth: "100%", minWidth: 0 },
+          },
+        }}
+      />
     </div>
   </section>
 </BaseLayout>

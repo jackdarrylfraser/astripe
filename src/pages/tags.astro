@@ -1,0 +1,36 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { authPath } from "../lib/auth-redirect";
+import { tagPath, uniqueActivityTags } from "../lib/activity-tags";
+
+Astro.response.headers.set("Cache-Control", "private, no-store");
+
+if (!Astro.locals.auth().userId) {
+  const response = Astro.redirect(authPath("/sign-in", "/tags"));
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
+}
+
+const entries = await getCollection("activities");
+entries.sort((left, right) => right.data.date.getTime() - left.data.date.getTime());
+const tags = uniqueActivityTags(entries);
+---
+
+<BaseLayout title="Tags | Astripe">
+  <Fragment slot="nav">
+    <a class="nav-link" href="/activities">Activities</a>
+    <a class="nav-link" href="/account">Account</a>
+  </Fragment>
+  <section slot="body" class="activities-page tags-page" aria-labelledby="tags-title">
+    <h1 id="tags-title" class="page-title page-title--section">Tags.</h1>
+    <p class="page-intro">Explore activities by tag.</p>
+    {tags.length > 0 ? (
+      <ul class="activity-tags" aria-label="Tags">
+        {tags.map((tag) => <li><a href={tagPath(tag)}>{tag}</a></li>)}
+      </ul>
+    ) : (
+      <p class="activity-empty">There are no tags yet. Check back soon.</p>
+    )}
+  </section>
+</BaseLayout>

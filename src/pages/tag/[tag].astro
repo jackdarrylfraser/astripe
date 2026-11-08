@@ -1,0 +1,61 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ActivityCard from "../../components/ActivityCard.astro";
+import { activitiesWithSlugs } from "../../lib/activity-slugs";
+import { hasActivityTag, tagPath, tagSlug } from "../../lib/activity-tags";
+import { authPath } from "../../lib/auth-redirect";
+
+Astro.response.headers.set("Cache-Control", "private, no-store");
+
+const slug = Astro.params.tag;
+if (!slug || tagSlug(slug) !== slug) {
+  return new Response("Not found", {
+    status: 404,
+    headers: { "Cache-Control": "private, no-store" },
+  });
+}
+
+if (!Astro.locals.auth().userId) {
+  const response = Astro.redirect(authPath("/sign-in", tagPath(slug)));
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
+}
+
+const entries = await getCollection("activities");
+entries.sort(
+  (left, right) => right.data.date.getTime() - left.data.date.getTime(),
+);
+const activities = activitiesWithSlugs(entries).filter(({ entry }) =>
+  hasActivityTag(entry.data.tags, slug),
+);
+const tag = activities
+  .flatMap(({ entry }) => entry.data.tags)
+  .find((value) => tagSlug(value) === slug);
+if (!tag) {
+  return new Response("Not found", {
+    status: 404,
+    headers: { "Cache-Control": "private, no-store" },
+  });
+}
+---
+
+<BaseLayout title={`${tag} | Astripe`}>
+  <Fragment slot="nav">
+    <a class="nav-link" href="/activities" aria-current="page">Activities</a>
+    <a class="nav-link" href="/account">Account</a>
+  </Fragment>
+  <section slot="body" class="activities-page" aria-labelledby="tag-title">
+    <h1 id="tag-title" class="page-title page-title--section">
+      Activites tagged '{tag}'
+    </h1>
+    <p class="page-intro">Explore activities by tag.</p>
+    <div class="activity-list">
+      {
+        activities.map(({ entry, slug }) => (
+          <ActivityCard entry={entry} slug={slug} />
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>

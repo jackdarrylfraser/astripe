@@ -28,7 +28,7 @@ The home page links to `/sign-in` for signed-out visitors and `/activities` and
 `/account` for signed-in users. New customers can create an account at `/sign-up`.
 The account page uses Clerk's profile component to manage account settings, and
 signed-in users can sign out from the account page. Signed-out visitors to
-`/account`, `/activities`, an activity page, or `/subscribe` are redirected to sign in and then
+`/account`, `/activities`, `/tags`, an activity or tag page, or `/subscribe` are redirected to sign in and then
 returned to their destination. Sign-up preserves the same destination. Only
 supported destinations are accepted; other authentication redirects go to the
 home page.
@@ -77,7 +77,7 @@ bun run preview  # Preview the production build locally
 ## Activities content
 
 The signed-in `/activities` page lists Markdown and MDX files from
-`src/content/activities/`. Each title links to its own page at
+`content/activities/`. Each title links to its own page at
 `/activities/<title-slug>`, where the file body, date, and optional
 `description` are displayed. In a Markdown (`.md`) file, put
 `<!-- excerpt -->` on its own line after the introductory content to show that
@@ -87,7 +87,11 @@ excerpt. The entire body remains visible on the activity page.
 Add an `.md` or `.mdx` file with a nonempty `title`, a valid `date`, and at
 least one nonempty tag in its `tags` array in frontmatter. Slugs are generated
 from titles, so titles must produce nonempty, unique slugs; changing a title
-changes its URL. For example:
+changes its URL. The `/tags` page lists the available tags, and tags link to
+`/tag/<tag-slug>` to show matching activities,
+newest first. Tag slugs are lowercase, omit accents, and replace punctuation
+and spaces with hyphens; tags that normalize to the same slug share a page.
+Each tag must contain at least one letter or number. For example:
 
 ```md
 ---
@@ -104,6 +108,6 @@ Meet us at the community space at 6pm.
 ```
 
 MDX is enabled through Astro's MDX integration, so activity files can also
-include MDX components. Both the list and individual pages require a signed-in user; if an activity is
+include MDX components. The activity list, tag pages, and individual pages require a signed-in user; if an activity is
 for paid members only, also check the `site_access` entitlement before exposing
 it, as described above.

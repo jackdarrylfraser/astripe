@@ -4,6 +4,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { activitiesWithSlugs, activityPath } from "../../lib/activity-slugs";
 import { authPath } from "../../lib/auth-redirect";
 import { formatActivityDate } from "../../lib/activity-date";
+import { tagPath } from "../../lib/activity-tags";
 
 Astro.response.headers.set("Cache-Control", "private, no-store");
 
@@ -43,6 +44,9 @@ const { Content } = await render(activity.entry);
       <div class="activity-content">
         <Content />
       </div>
+      <ul class="activity-tags" aria-label="Tags">
+        {data.tags.map((tag) => <li><a href={tagPath(tag)}>{tag}</a></li>)}
+      </ul>
     </article>
   </section>
 </BaseLayout>

@@ -12,12 +12,12 @@ export default defineConfig({
     clerk({
       appearance: {
         variables: {
-          colorPrimary: "#414141",
+          colorPrimary: "#000000",
           colorBackground: "#ffffff",
-          colorText: "#414141",
-          colorTextSecondary: "#707070",
+          colorText: "#000000cc",
+          colorTextSecondary: "#000000cc",
           colorInputBackground: "#ffffff",
-          colorInputText: "#414141",
+          colorInputText: "#000000cc",
           borderRadius: "0",
           fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
         },

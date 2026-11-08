@@ -5,6 +5,35 @@ import { activitiesWithSlugs, activityPath, activitySlug } from "../src/lib/acti
 import { activityExcerpt } from "../src/lib/activity-excerpt";
 import { activitySchema } from "../src/lib/activity-schema";
 import { formatActivityDate } from "../src/lib/activity-date";
+import { hasActivityTag, isTagPath, tagPath, tagSlug, uniqueActivityTags } from "../src/lib/activity-tags";
+
+describe("activity tags", () => {
+  test("normalizes tags into shareable paths and matches equivalent tags", () => {
+    expect(tagSlug("Café & Community")).toBe("cafe-community");
+    expect(tagPath("Café & Community")).toBe("/tag/cafe-community");
+    expect(tagPath("活動")).toBe("/tag/%E6%B4%BB%E5%8B%95");
+    expect(hasActivityTag(["Café & Community", "Meetup"], "cafe-community")).toBe(true);
+    expect(hasActivityTag(["Meetup"], "cafe-community")).toBe(false);
+  });
+
+  test("accepts only canonical, safe tag paths", () => {
+    for (const path of ["/tag/demo", "/tag/demo/", "/tag/%E6%B4%BB%E5%8B%95"]) {
+      expect(isTagPath(path)).toBe(true);
+    }
+    for (const path of ["/tag/", "/tag/../account", "/tag/a/b", "/tag/demo?x=1", "/tag/%2F%2Fevil", "/tag/%zz", "/tag/Demo"]) {
+      expect(isTagPath(path)).toBe(false);
+    }
+  });
+
+  test("lists each normalized tag once, keeping the first label", () => {
+    const entries = [
+      { data: { tags: ["Café", "Meetup", "Café"] } },
+      { data: { tags: ["cafe", "Community"] } },
+    ];
+    expect(uniqueActivityTags(entries)).toEqual(["Café", "Community", "Meetup"]);
+    expect(uniqueActivityTags([])).toEqual([]);
+  });
+});
 
 describe("activity dates", () => {
   test("formats UTC dates with the full month name", () => {
@@ -33,6 +62,7 @@ describe("activity frontmatter", () => {
       { ...valid, tags: undefined },
       { ...valid, tags: [] },
       { ...valid, tags: [" "] },
+      { ...valid, tags: ["!!!"] },
     ]) {
       expect(activitySchema.safeParse(invalid).success).toBe(false);
     }
@@ -55,7 +85,7 @@ describe("activity excerpts", () => {
 
 describe("authentication destinations", () => {
   test("preserves the account, activities, and subscription destinations", () => {
-    for (const destination of ["/account", "/activities", "/activities/community-meetup", "/activities/%E6%B4%BB%E5%8B%95", "/subscribe"]) {
+    for (const destination of ["/account", "/activities", "/activities/community-meetup", "/activities/%E6%B4%BB%E5%8B%95", "/tags", "/tag/demo", "/tag/demo/", "/tag/%E6%B4%BB%E5%8B%95", "/subscribe"]) {
       const path = authPath("/sign-in", destination);
       expect(authDestination(new URL(path, "https://example.com"))).toBe(destination);
       expect(authDestination(new URL(authPath("/sign-up", destination), "https://example.com"))).toBe(destination);
@@ -63,7 +93,7 @@ describe("authentication destinations", () => {
   });
 
   test("rejects unrecognized and external destinations", () => {
-    for (const destination of ["https://evil.example", "//evil.example", "/account?x=1", "/other", "/activities/../account", "/activities/a/b", "/activities/a?x=1", "/activities/%2F%2Fevil.example", "/activities/%zz"]) {
+    for (const destination of ["https://evil.example", "//evil.example", "/account?x=1", "/other", "/activities/../account", "/activities/a/b", "/activities/a?x=1", "/activities/%2F%2Fevil.example", "/activities/%zz", "/tag/../account", "/tag/a/b", "/tag/%2F%2Fevil", "/tag/%zz"]) {
       const url = new URL(authPath("/sign-in", destination), "https://example.com");
       expect(authDestination(url)).toBe("/");
     }

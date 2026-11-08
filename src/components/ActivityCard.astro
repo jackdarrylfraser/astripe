@@ -1,0 +1,29 @@
+---
+import { render, type CollectionEntry } from "astro:content";
+import { activityPath } from "../lib/activity-slugs";
+import { activityExcerpt } from "../lib/activity-excerpt";
+import { formatActivityDate } from "../lib/activity-date";
+import { tagPath } from "../lib/activity-tags";
+
+interface Props {
+  entry: CollectionEntry<"activities">;
+  slug: string;
+}
+
+const { entry, slug } = Astro.props;
+const excerpt = activityExcerpt(entry.rendered?.html);
+const Excerpt = excerpt && entry.rendered
+  ? (await render({ ...entry, rendered: { ...entry.rendered, html: excerpt } })).Content
+  : undefined;
+---
+
+<article class="activity">
+  <header>
+    <h2 class="activity-title"><a class="activity-link" href={activityPath(slug)}>{entry.data.title}</a></h2>
+    <time class="activity-date" datetime={entry.data.date.toISOString()}>{formatActivityDate(entry.data.date)}</time>
+  </header>
+  {Excerpt && <div class="activity-description"><Excerpt /></div>}
+  <ul class="activity-tags" aria-label="Tags">
+    {entry.data.tags.map((tag) => <li><a href={tagPath(tag)}>{tag}</a></li>)}
+  </ul>
+</article>

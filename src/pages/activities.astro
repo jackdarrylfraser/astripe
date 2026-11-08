@@ -1,9 +1,8 @@
 ---
-import { getCollection, render } from "astro:content";
+import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { activitiesWithSlugs, activityPath } from "../lib/activity-slugs";
-import { activityExcerpt } from "../lib/activity-excerpt";
-import { formatActivityDate } from "../lib/activity-date";
+import ActivityCard from "../components/ActivityCard.astro";
+import { activitiesWithSlugs } from "../lib/activity-slugs";
 
 if (!Astro.locals.auth().userId) {
   const response = Astro.redirect("/sign-in?redirect_url=%2Factivities");
@@ -15,39 +14,20 @@ Astro.response.headers.set("Cache-Control", "private, no-store");
 
 const entries = await getCollection("activities");
 entries.sort((left, right) => right.data.date.getTime() - left.data.date.getTime());
-const activities = await Promise.all(activitiesWithSlugs(entries).map(async (activity) => {
-  const { entry } = activity;
-  const excerpt = activityExcerpt(entry.rendered?.html);
-  const Excerpt = excerpt && entry.rendered
-    ? (await render({ ...entry, rendered: { ...entry.rendered, html: excerpt } })).Content
-    : undefined;
-  return { ...activity, Excerpt };
-}));
+const activities = activitiesWithSlugs(entries);
 ---
 
 <BaseLayout title="Activities | Astripe">
   <Fragment slot="nav">
-    <a class="nav-link" href="/activities" aria-current="page">Activities</a>
+    <a class="nav-link" href="/tags">Tags</a>
     <a class="nav-link" href="/account">Account</a>
   </Fragment>
   <section slot="body" class="activities-page" aria-labelledby="activities-title">
-    <p class="page-kicker">Your membership</p>
     <h1 id="activities-title" class="page-title page-title--section">Activities.</h1>
     <p class="page-intro">Explore the latest activities included with your membership.</p>
     {activities.length > 0 ? (
       <div class="activity-list">
-        {activities.map(({ entry, slug, Excerpt }) => (
-          <article class="activity">
-            <header>
-              <h2 class="activity-title"><a class="activity-link" href={activityPath(slug)}>{entry.data.title}</a></h2>
-              <time class="activity-date" datetime={entry.data.date.toISOString()}>{formatActivityDate(entry.data.date)}</time>
-            </header>
-            {Excerpt && <div class="activity-description"><Excerpt /></div>}
-            <ul class="activity-tags" aria-label="Tags">
-              {entry.data.tags.map((tag) => <li>{tag}</li>)}
-            </ul>
-          </article>
-        ))}
+        {activities.map(({ entry, slug }) => <ActivityCard entry={entry} slug={slug} />)}
       </div>
     ) : (
       <p class="activity-empty">There are no activities yet. Check back soon.</p>
