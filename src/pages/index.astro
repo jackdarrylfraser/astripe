@@ -1,26 +1,33 @@
 ---
-import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/astro/components";
 import BaseLayout from "../layouts/BaseLayout.astro";
+
+const { userId } = Astro.locals.auth();
+Astro.response.headers.set("Cache-Control", "private, no-store");
 ---
 
 <BaseLayout title="Astripe">
-  <a slot="nav" class="nav-link" href="/pricing">Pricing</a>
-  <a slot="nav" class="nav-link" href="/members">Members area</a>
-  <Fragment slot="body">
-    <h1 class="page-title page-title--home">Astripe</h1>
-    <p class="page-intro">A basic Astro starter built with Bun.</p>
+  {userId ? (
+    <Fragment slot="nav">
+      <a class="nav-link" href="/activities">Activities</a>
+      <a class="nav-link" href="/account">Account</a>
+    </Fragment>
+  ) : (
+    <a slot="nav" class="nav-link" href="/sign-in">Sign in</a>
+    <a slot="nav" class="nav-link" href="/sign-up">Sign up</a>
+  )}
+  <section slot="body" aria-labelledby="home-title">
+    <p class="page-kicker">Welcome to Astripe</p>
+    <h1 id="home-title" class="page-title">A better way to be a member.</h1>
+    <p class="page-intro">
+      Join Astripe to get access to everything included with your membership.
+    </p>
     <div class="action-row">
-      <Show when="signed-out">
-        <SignInButton asChild>
-          <button class="clerk-button clerk-button--secondary" type="button">Sign in</button>
-        </SignInButton>
-        <SignUpButton asChild>
-          <button class="clerk-button clerk-button--primary" type="button">Create account</button>
-        </SignUpButton>
-      </Show>
-      <Show when="signed-in">
-        <UserButton />
-      </Show>
+      <a class="clerk-button clerk-button--primary" href="/pricing">Explore membership</a>
+      {userId ? (
+        <a class="text-link" href="/account">Your account</a>
+      ) : (
+        <a class="text-link" href="/sign-in">Already a member? Sign in</a>
+      )}
     </div>
-  </Fragment>
+  </section>
 </BaseLayout>

@@ -1,0 +1,40 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { activitiesWithSlugs, activityPath } from "../lib/activity-slugs";
+
+if (!Astro.locals.auth().userId) {
+  const response = Astro.redirect("/sign-in?redirect_url=%2Factivities");
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
+}
+
+Astro.response.headers.set("Cache-Control", "private, no-store");
+
+const entries = await getCollection("activities");
+entries.sort((left, right) => (right.data.date?.getTime() ?? 0) - (left.data.date?.getTime() ?? 0));
+const activities = activitiesWithSlugs(entries);
+---
+
+<BaseLayout title="Activities | Astripe">
+  <Fragment slot="nav">
+    <a class="nav-link" href="/activities" aria-current="page">Activities</a>
+    <a class="nav-link" href="/account">Account</a>
+  </Fragment>
+  <section slot="body" class="activities-page" aria-labelledby="activities-title">
+    <p class="page-kicker">Your membership</p>
+    <h1 id="activities-title" class="page-title page-title--section">Activities.</h1>
+    <p class="page-intro">Explore the latest activities included with your membership.</p>
+    {activities.length > 0 ? (
+      <div class="activity-list">
+        {activities.map(({ entry, slug }) => (
+          <article class="activity">
+            <h2 class="activity-title"><a class="activity-link" href={activityPath(slug)}>{entry.data.title}</a></h2>
+          </article>
+        ))}
+      </div>
+    ) : (
+      <p class="activity-empty">There are no activities yet. Check back soon.</p>
+    )}
+  </section>
+</BaseLayout>

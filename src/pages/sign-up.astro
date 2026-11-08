@@ -1,0 +1,26 @@
+---
+import { SignUp } from "@clerk/astro/components";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { authDestination, authPath } from "../lib/auth-redirect";
+
+const destination = authDestination(Astro.url);
+if (Astro.locals.auth().userId) {
+  const response = Astro.redirect(destination);
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
+}
+---
+
+<BaseLayout title="Create an account | Astripe">
+  <a slot="nav" class="nav-link" href="/pricing">Explore membership</a>
+  <section slot="body" class="auth-page" aria-labelledby="sign-up-title">
+    <div class="auth-copy">
+      <p class="page-kicker">Join Astripe</p>
+      <h1 id="sign-up-title" class="page-title page-title--section">Create your account.</h1>
+      <p class="page-intro">Create an account to continue with your membership.</p>
+    </div>
+    <div class="sign-in-card">
+      <SignUp routing="hash" signInUrl={authPath("/sign-in", destination)} forceRedirectUrl={destination} signInForceRedirectUrl={destination} />
+    </div>
+  </section>
+</BaseLayout>
