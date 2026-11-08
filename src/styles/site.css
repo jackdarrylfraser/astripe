@@ -38,16 +38,21 @@
 
 @layer components {
   .site-shell {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
     width: min(100% - 5.5rem, 1440px);
     margin-inline: auto;
   }
 
   .site-header {
     display: flex;
+    width: 100%;
+    max-width: 1080px;
     min-height: 104px;
     align-items: center;
-    justify-content: space-between;
     gap: 2rem;
+    margin-inline: auto;
   }
 
   .site-wordmark {
@@ -60,6 +65,7 @@
 
   .site-nav {
     display: flex;
+    width: 100%;
     flex-wrap: wrap;
     align-items: center;
     justify-content: flex-end;
@@ -157,18 +163,10 @@
     text-decoration-thickness: 2px;
   }
 
-  .nav-sign-out {
-    border: 0;
-    padding: 0;
-    background: none;
-    font-family: inherit;
-    text-decoration: underline;
-    cursor: pointer;
-  }
-
   .site-main {
-    min-height: calc(100vh - 200px);
-    padding-block: clamp(4rem, 8vw, 7rem) 5rem;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
   }
 
   .auth-page {
@@ -195,11 +193,13 @@
   }
 
   .account-page {
+    width: 100%;
     max-width: 1080px;
     margin-inline: auto;
   }
 
   .activities-page {
+    width: 100%;
     max-width: 1080px;
     margin-inline: auto;
   }
@@ -258,8 +258,27 @@
     margin-top: 0;
   }
 
+  .account-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.35rem 0 2.5rem;
+  }
+
+  .account-actions .page-intro {
+    margin: 0;
+  }
+
+  .account-actions .clerk-button {
+    margin-left: auto;
+  }
+
   .account-profile {
+    display: flex;
+    justify-content: center;
     max-width: 100%;
+    margin-bottom: 5rem;
   }
 
   .pricing-page {
@@ -366,16 +385,6 @@
     margin: -2rem 0 2.5rem;
   }
 
-  .site-footer {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    padding-block: 1.5rem 2rem;
-    border-top: 1px solid #aaa;
-    color: var(--color-muted);
-    font-size: 0.9rem;
-  }
-
   @media (max-width: 640px) {
     .site-shell {
       width: calc(100% - 2.5rem);
@@ -394,11 +403,6 @@
       font-size: 0.9rem;
     }
 
-    .site-main {
-      min-height: calc(100vh - 160px);
-      padding-top: 4.25rem;
-    }
-
     .auth-page {
       grid-template-columns: 1fr;
       gap: 2.5rem;
@@ -413,9 +417,5 @@
       gap: 1rem;
     }
 
-    .site-footer {
-      flex-direction: column;
-      gap: 0.35rem;
-    }
   }
 }

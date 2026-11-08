@@ -1,5 +1,4 @@
 ---
-import { SignOutButton } from "@clerk/astro/components";
 import "../styles/site.css";
 
 interface Props {
@@ -7,7 +6,6 @@ interface Props {
 }
 
 const { title } = Astro.props;
-const { userId } = Astro.locals.auth();
 Astro.response.headers.set("Cache-Control", "private, no-store");
 ---
 
@@ -22,14 +20,8 @@ Astro.response.headers.set("Cache-Control", "private, no-store");
   <body>
     <div class="site-shell">
       <header class="site-header">
-        <a class="site-wordmark" href="/" aria-label="Astripe home">Astripe</a>
         <nav class="site-nav" aria-label="Main navigation">
           <slot name="nav" />
-          {userId && (
-            <SignOutButton redirectUrl="/" asChild>
-              <button type="button" class="nav-link nav-sign-out">Sign out</button>
-            </SignOutButton>
-          )}
         </nav>
       </header>
       <main class="site-main">
