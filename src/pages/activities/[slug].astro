@@ -3,6 +3,7 @@ import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { activitiesWithSlugs, activityPath } from "../../lib/activity-slugs";
 import { authPath } from "../../lib/auth-redirect";
+import { formatActivityDate } from "../../lib/activity-date";
 
 Astro.response.headers.set("Cache-Control", "private, no-store");
 
@@ -36,7 +37,7 @@ const { Content } = await render(activity.entry);
     <article class="activity">
       <header class="activity-header">
         <h1 class="page-title page-title--section" id="activity-title">{data.title}</h1>
-        {data.date && <time class="activity-date" datetime={data.date.toISOString()}>{data.date.toLocaleDateString()}</time>}
+        <time class="activity-date" datetime={data.date.toISOString()}>{formatActivityDate(data.date)}</time>
       </header>
       {data.description && <p class="activity-description">{data.description}</p>}
       <div class="activity-content">

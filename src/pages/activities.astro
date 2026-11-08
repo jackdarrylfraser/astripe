@@ -1,7 +1,9 @@
 ---
-import { getCollection } from "astro:content";
+import { getCollection, render } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { activitiesWithSlugs, activityPath } from "../lib/activity-slugs";
+import { activityExcerpt } from "../lib/activity-excerpt";
+import { formatActivityDate } from "../lib/activity-date";
 
 if (!Astro.locals.auth().userId) {
   const response = Astro.redirect("/sign-in?redirect_url=%2Factivities");
@@ -12,8 +14,15 @@ if (!Astro.locals.auth().userId) {
 Astro.response.headers.set("Cache-Control", "private, no-store");
 
 const entries = await getCollection("activities");
-entries.sort((left, right) => (right.data.date?.getTime() ?? 0) - (left.data.date?.getTime() ?? 0));
-const activities = activitiesWithSlugs(entries);
+entries.sort((left, right) => right.data.date.getTime() - left.data.date.getTime());
+const activities = await Promise.all(activitiesWithSlugs(entries).map(async (activity) => {
+  const { entry } = activity;
+  const excerpt = activityExcerpt(entry.rendered?.html);
+  const Excerpt = excerpt && entry.rendered
+    ? (await render({ ...entry, rendered: { ...entry.rendered, html: excerpt } })).Content
+    : undefined;
+  return { ...activity, Excerpt };
+}));
 ---
 
 <BaseLayout title="Activities | Astripe">
@@ -27,9 +36,16 @@ const activities = activitiesWithSlugs(entries);
     <p class="page-intro">Explore the latest activities included with your membership.</p>
     {activities.length > 0 ? (
       <div class="activity-list">
-        {activities.map(({ entry, slug }) => (
+        {activities.map(({ entry, slug, Excerpt }) => (
           <article class="activity">
-            <h2 class="activity-title"><a class="activity-link" href={activityPath(slug)}>{entry.data.title}</a></h2>
+            <header>
+              <h2 class="activity-title"><a class="activity-link" href={activityPath(slug)}>{entry.data.title}</a></h2>
+              <time class="activity-date" datetime={entry.data.date.toISOString()}>{formatActivityDate(entry.data.date)}</time>
+            </header>
+            {Excerpt && <div class="activity-description"><Excerpt /></div>}
+            <ul class="activity-tags" aria-label="Tags">
+              {entry.data.tags.map((tag) => <li>{tag}</li>)}
+            </ul>
           </article>
         ))}
       </div>

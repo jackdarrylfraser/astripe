@@ -27,7 +27,7 @@ Open the local URL printed by the development server.
 The home page links to `/sign-in` for signed-out visitors and `/activities` and
 `/account` for signed-in users. New customers can create an account at `/sign-up`.
 The account page uses Clerk's profile component to manage account settings, and
-signed-in users can sign out from the navigation. Signed-out visitors to
+signed-in users can sign out from the account page. Signed-out visitors to
 `/account`, `/activities`, an activity page, or `/subscribe` are redirected to sign in and then
 returned to their destination. Sign-up preserves the same destination. Only
 supported destinations are accepted; other authentication redirects go to the
@@ -76,19 +76,29 @@ bun run preview  # Preview the production build locally
 
 ## Activities content
 
-The signed-in `/activities` page lists the titles of Markdown and MDX files from
+The signed-in `/activities` page lists Markdown and MDX files from
 `src/content/activities/`. Each title links to its own page at
-`/activities/<title-slug>`, where the file body and optional `date` and
-`description` are displayed. Add an `.md` or `.mdx` file with a `title` in its
-frontmatter. Slugs are generated from titles, so titles must produce nonempty,
-unique slugs; changing a title changes its URL. For example:
+`/activities/<title-slug>`, where the file body, date, and optional
+`description` are displayed. In a Markdown (`.md`) file, put
+`<!-- excerpt -->` on its own line after the introductory content to show that
+content as an excerpt on the activities list. Files without the marker have no
+excerpt. The entire body remains visible on the activity page.
+
+Add an `.md` or `.mdx` file with a nonempty `title`, a valid `date`, and at
+least one nonempty tag in its `tags` array in frontmatter. Slugs are generated
+from titles, so titles must produce nonempty, unique slugs; changing a title
+changes its URL. For example:
 
 ```md
 ---
 title: Community meetup
 date: 2026-11-07
-description: Join members for an evening together.
+tags: [community, meetup]
 ---
+
+Join members for an evening together.
+
+<!-- excerpt -->
 
 Meet us at the community space at 6pm.
 ```

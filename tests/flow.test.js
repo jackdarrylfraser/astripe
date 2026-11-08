@@ -2,6 +2,56 @@ import { describe, expect, test } from "bun:test";
 import { authDestination, authPath } from "../src/lib/auth-redirect";
 import { getPublicUserPlans } from "../src/lib/billing";
 import { activitiesWithSlugs, activityPath, activitySlug } from "../src/lib/activity-slugs";
+import { activityExcerpt } from "../src/lib/activity-excerpt";
+import { activitySchema } from "../src/lib/activity-schema";
+import { formatActivityDate } from "../src/lib/activity-date";
+
+describe("activity dates", () => {
+  test("formats UTC dates with the full month name", () => {
+    expect(formatActivityDate(new Date("2026-01-05T00:00:00Z"))).toBe("January 5, 2026");
+    expect(formatActivityDate(new Date("2026-11-07T00:00:00Z"))).toBe("November 7, 2026");
+  });
+});
+
+describe("activity frontmatter", () => {
+  const valid = { title: "Meetup", date: "2026-11-07", tags: ["community"] };
+
+  test("accepts required fields and parses dates", () => {
+    const result = activitySchema.parse(valid);
+    expect(result.date.toISOString()).toBe("2026-11-07T00:00:00.000Z");
+    expect(result.tags).toEqual(["community"]);
+    expect(activitySchema.safeParse({ ...valid, date: new Date("2026-11-07") }).success).toBe(true);
+  });
+
+  test("rejects missing or invalid required fields", () => {
+    for (const invalid of [
+      { ...valid, title: undefined },
+      { ...valid, title: " " },
+      { ...valid, date: undefined },
+      { ...valid, date: null },
+      { ...valid, date: "not a date" },
+      { ...valid, tags: undefined },
+      { ...valid, tags: [] },
+      { ...valid, tags: [" "] },
+    ]) {
+      expect(activitySchema.safeParse(invalid).success).toBe(false);
+    }
+  });
+});
+
+describe("activity excerpts", () => {
+  test("extracts the rendered Markdown before the excerpt marker", () => {
+    expect(activityExcerpt("<p>A <strong>short</strong> introduction.</p>\n<!-- excerpt -->\n<p>Full content.</p>"))
+      .toBe("<p>A <strong>short</strong> introduction.</p>");
+  });
+
+  test("omits missing and empty excerpts and ignores markers in code", () => {
+    expect(activityExcerpt(undefined)).toBeUndefined();
+    expect(activityExcerpt("<p>No marker.</p>")).toBeUndefined();
+    expect(activityExcerpt("<!-- excerpt -->\n<p>Full content.</p>")).toBeUndefined();
+    expect(activityExcerpt("<pre><code>&lt;!-- excerpt --&gt;</code></pre>")).toBeUndefined();
+  });
+});
 
 describe("authentication destinations", () => {
   test("preserves the account, activities, and subscription destinations", () => {

@@ -250,6 +250,31 @@
     margin-block: 0.75rem;
   }
 
+  .activity-list .activity-date {
+    display: block;
+    margin-top: 0.75rem;
+  }
+
+  .activity-list .activity-description > :first-child {
+    margin-top: 0;
+  }
+
+  .activity-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .activity-tags li {
+    border: 1px solid #ddd;
+    padding: 0.2rem 0.5rem;
+    color: var(--color-muted);
+    font-size: 0.875rem;
+  }
+
   .activity-content {
     line-height: 1.7;
   }
