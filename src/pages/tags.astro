@@ -1,13 +1,14 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { authPath } from "../lib/auth-redirect";
 import { tagPath, uniqueActivityTags } from "../lib/activity-tags";
+import { memberAccessRedirect } from "../lib/member-access";
 
 Astro.response.headers.set("Cache-Control", "private, no-store");
 
-if (!Astro.locals.auth().userId) {
-  const response = Astro.redirect(authPath("/sign-in", "/tags"));
+const redirect = memberAccessRedirect(Astro.locals.auth(), "/tags");
+if (redirect) {
+  const response = Astro.redirect(redirect);
   response.headers.set("Cache-Control", "private, no-store");
   return response;
 }
@@ -18,10 +19,6 @@ const tags = uniqueActivityTags(entries);
 ---
 
 <BaseLayout title="Tags | Astripe">
-  <Fragment slot="nav">
-    <a class="nav-link" href="/activities">Activities</a>
-    <a class="nav-link" href="/account">Account</a>
-  </Fragment>
   <section slot="body" class="activities-page tags-page" aria-labelledby="tags-title">
     <h1 id="tags-title" class="page-title page-title--section">Tags.</h1>
     <p class="page-intro">Explore activities by tag.</p>

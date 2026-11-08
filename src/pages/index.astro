@@ -6,15 +6,6 @@ Astro.response.headers.set("Cache-Control", "private, no-store");
 ---
 
 <BaseLayout title="Astripe">
-  {userId ? (
-    <Fragment slot="nav">
-      <a class="nav-link" href="/activities">Activities</a>
-      <a class="nav-link" href="/account">Account</a>
-    </Fragment>
-  ) : (
-    <a slot="nav" class="nav-link" href="/sign-in">Sign in</a>
-    <a slot="nav" class="nav-link" href="/sign-up">Sign up</a>
-  )}
   <section slot="body" aria-labelledby="home-title">
     <p class="page-kicker">Welcome to Astripe</p>
     <h1 id="home-title" class="page-title">A better way to be a member.</h1>

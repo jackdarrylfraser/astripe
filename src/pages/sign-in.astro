@@ -2,6 +2,7 @@
 import { SignIn } from "@clerk/astro/components";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { authDestination, authPath } from "../lib/auth-redirect";
+import { authAppearance } from "../lib/auth-appearance";
 
 const destination = authDestination(Astro.url);
 if (Astro.locals.auth().userId) {
@@ -12,21 +13,10 @@ if (Astro.locals.auth().userId) {
 ---
 
 <BaseLayout title="Sign in | Astripe">
-  <a slot="nav" class="nav-link" href="/pricing">Explore membership</a>
   <section slot="body" class="auth-page" aria-labelledby="sign-in-title">
-    <div class="auth-copy">
-      <p class="page-kicker">Welcome back</p>
-      <h1 id="sign-in-title" class="page-title page-title--section">Your membership is waiting.</h1>
-      <p class="page-intro">
-        Sign in to pick up where you left off and get back to everything included with your
-        membership.
-      </p>
-      <p class="auth-signup">
-        New to Astripe? <a class="text-link" href={authPath("/sign-up", destination)}>Create an account</a>
-      </p>
-    </div>
+
     <div class="sign-in-card">
-      <SignIn routing="hash" signUpUrl={authPath("/sign-up", destination)} forceRedirectUrl={destination} signUpForceRedirectUrl={destination} />
+      <SignIn routing="hash" appearance={authAppearance} signUpUrl={authPath("/sign-up", destination)} forceRedirectUrl={destination} signUpForceRedirectUrl={destination} />
     </div>
   </section>
 </BaseLayout>

@@ -60,10 +60,11 @@ Selecting a plan on the public page does not preselect it at checkout. After
 checkout, Clerk's Continue button sends customers to `/account`, where they can
 manage their account and subscription. Leaving checkout does not grant access.
 
-The current home page is public and the middleware does not enforce a paid
-entitlement. Any members-only pages or endpoints must check the **user**
-entitlement `site_access` on the server before exposing sensitive data or
-actions. Client-side visibility checks are not a substitute for authorization.
+The home page is public. The activities and tag pages check the **user**
+entitlement `site_access` on the server before exposing content. Signed-in users
+without that feature are redirected to `/subscribe`. Further members-only pages
+or endpoints must check the same entitlement on the server; client-side
+visibility checks are not a substitute for authorization.
 
 ## Commands
 
@@ -76,7 +77,7 @@ bun run preview  # Preview the production build locally
 
 ## Activities content
 
-The signed-in `/activities` page lists Markdown and MDX files from
+The members-only `/activities` page lists Markdown and MDX files from
 `content/activities/`. Each title links to its own page at
 `/activities/<title-slug>`, where the file body, date, and optional
 `description` are displayed. In a Markdown (`.md`) file, put
@@ -108,6 +109,5 @@ Meet us at the community space at 6pm.
 ```
 
 MDX is enabled through Astro's MDX integration, so activity files can also
-include MDX components. The activity list, tag pages, and individual pages require a signed-in user; if an activity is
-for paid members only, also check the `site_access` entitlement before exposing
-it, as described above.
+include MDX components. The activity list, tag index, tag pages, and individual
+activity pages require a signed-in user with the `site_access` entitlement.

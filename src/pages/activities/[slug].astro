@@ -2,9 +2,9 @@
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { activitiesWithSlugs, activityPath } from "../../lib/activity-slugs";
-import { authPath } from "../../lib/auth-redirect";
 import { formatActivityDate } from "../../lib/activity-date";
 import { tagPath } from "../../lib/activity-tags";
+import { memberAccessRedirect } from "../../lib/member-access";
 
 Astro.response.headers.set("Cache-Control", "private, no-store");
 
@@ -13,8 +13,9 @@ if (!slug) {
   return new Response("Not found", { status: 404, headers: { "Cache-Control": "private, no-store" } });
 }
 
-if (!Astro.locals.auth().userId) {
-  const response = Astro.redirect(authPath("/sign-in", activityPath(slug)));
+const redirect = memberAccessRedirect(Astro.locals.auth(), activityPath(slug));
+if (redirect) {
+  const response = Astro.redirect(redirect);
   response.headers.set("Cache-Control", "private, no-store");
   return response;
 }
@@ -29,10 +30,6 @@ const { Content } = await render(activity.entry);
 ---
 
 <BaseLayout title={`${data.title} | Astripe`}>
-  <Fragment slot="nav">
-    <a class="nav-link" href="/activities" aria-current="page">Activities</a>
-    <a class="nav-link" href="/account">Account</a>
-  </Fragment>
   <section slot="body" class="activities-page" aria-labelledby="activity-title">
     <p class="page-kicker"><a class="text-link" href="/activities">Activities</a></p>
     <article class="activity">

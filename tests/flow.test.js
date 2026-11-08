@@ -6,6 +6,59 @@ import { activityExcerpt } from "../src/lib/activity-excerpt";
 import { activitySchema } from "../src/lib/activity-schema";
 import { formatActivityDate } from "../src/lib/activity-date";
 import { hasActivityTag, isTagPath, tagPath, tagSlug, uniqueActivityTags } from "../src/lib/activity-tags";
+import { memberAccessRedirect } from "../src/lib/member-access";
+import { navigationLinks } from "../src/lib/navigation";
+
+describe("navigation", () => {
+  test("selects the existing links for each page and authentication state", () => {
+    const cases = [
+      ["/", false, ["/sign-in", "/sign-up"]],
+      ["/", true, ["/activities", "/account"]],
+      ["/pricing", false, ["/", "/sign-in", "/sign-up"]],
+      ["/pricing/", true, ["/", "/account"]],
+      ["/sign-in", false, ["/"]],
+      ["/sign-up", false, ["/"]],
+      ["/subscribe", true, ["/pricing", "/account"]],
+      ["/account", true, ["/activities", "/account"]],
+      ["/activities/", true, ["/tags", "/account"]],
+      ["/activities/meetup", true, ["/activities", "/account"]],
+      ["/tags", true, ["/activities", "/account"]],
+      ["/tag/community/", true, ["/activities", "/account"]],
+      ["/unknown", false, []],
+    ];
+    for (const [path, signedIn, expected] of cases) {
+      expect(navigationLinks(path, signedIn).map((link) => link.href)).toEqual(expected);
+    }
+  });
+
+  test("preserves current-page markers on account and detail pages", () => {
+    for (const [path, current] of [
+      ["/account", "/account"],
+      ["/activities/meetup", "/activities"],
+      ["/tag/community", "/activities"],
+      ["/activities", undefined],
+      ["/tags", undefined],
+    ]) {
+      expect(navigationLinks(path, true).find((link) => link.current)?.href).toBe(current);
+    }
+  });
+});
+
+describe("member access", () => {
+  test("redirects signed-out visitors to sign in with their destination", () => {
+    for (const destination of ["/activities", "/activities/community-meetup", "/tags", "/tag/community"]) {
+      expect(memberAccessRedirect({ userId: null }, destination)).toBe(authPath("/sign-in", destination));
+    }
+  });
+
+  test("requires the user-scoped site access feature", () => {
+    const calls = [];
+    const auth = { userId: "user_1", has: (params) => { calls.push(params); return false; } };
+    expect(memberAccessRedirect(auth, "/activities")).toBe("/subscribe");
+    expect(calls).toEqual([{ feature: "user:site_access" }]);
+    expect(memberAccessRedirect({ ...auth, has: () => true }, "/activities")).toBeNull();
+  });
+});
 
 describe("activity tags", () => {
   test("normalizes tags into shareable paths and matches equivalent tags", () => {

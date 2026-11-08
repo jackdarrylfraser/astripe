@@ -1,5 +1,6 @@
 ---
 import "../styles/site.css";
+import Navigation from "../components/Navigation.astro";
 
 interface Props {
   title: string;
@@ -20,9 +21,7 @@ Astro.response.headers.set("Cache-Control", "private, no-store");
   <body>
     <div class="site-shell">
       <header class="site-header">
-        <nav class="site-nav" aria-label="Main navigation">
-          <slot name="nav" />
-        </nav>
+        <Navigation />
       </header>
       <main class="site-main">
         <slot name="body" />

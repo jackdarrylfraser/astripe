@@ -5,17 +5,10 @@ import { getPublicUserPlans } from "../lib/billing";
 
 const { userId } = Astro.locals.auth();
 const plans = await getPublicUserPlans(clerkClient(Astro).billing);
-const subscribeUrl = userId ? "/subscribe" : "/sign-in?redirect_url=%2Fsubscribe";
+const subscribeUrl = userId ? "/subscribe" : "/sign-up?redirect_url=%2Fsubscribe";
 ---
 
 <BaseLayout title="Pricing | Astripe">
-  <a slot="nav" class="nav-link" href="/">Home</a>
-  {userId ? (
-    <a slot="nav" class="nav-link" href="/account">Account</a>
-  ) : (
-    <a slot="nav" class="nav-link" href="/sign-in">Sign in</a>
-  )}
-  {!userId && <a slot="nav" class="nav-link" href="/sign-up">Sign up</a>}
   <section slot="body" class="pricing-page" aria-labelledby="pricing-title">
     <p class="page-kicker">Membership</p>
     <h1 id="pricing-title" class="page-title page-title--section">Find your plan.</h1>

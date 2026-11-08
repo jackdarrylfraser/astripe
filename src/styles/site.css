@@ -13,6 +13,27 @@
   padding-top: 2rem;
 }
 
+.auth-clerk-card {
+  box-shadow: none;
+}
+
+.auth-clerk-footer {
+  background: #fff;
+}
+
+.auth-clerk-branding {
+  display: none;
+}
+
+.auth-clerk-button.auth-clerk-button,
+.auth-clerk-button.auth-clerk-button:hover,
+.auth-clerk-button.auth-clerk-button:focus {
+  border: 1px solid var(--color-ink);
+  background: transparent;
+  color: var(--color-text);
+  box-shadow: none;
+}
+
 @layer base {
   *,
   *::before,
@@ -173,6 +194,7 @@
 
   .auth-page {
     display: grid;
+    width: 100%;
     max-width: 1080px;
     grid-template-columns: minmax(0, 1fr);
     align-items: center;
@@ -189,9 +211,15 @@
     color: var(--color-muted);
   }
 
+  .auth-message {
+    margin: 0;
+    text-align: center;
+  }
+
   .sign-in-card {
+    display: flex;
     width: 100%;
-    justify-self: start;
+    justify-content: center;
   }
 
   .account-page {
